@@ -5,10 +5,120 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>PariPython</title>
 		<link rel="stylesheet" type="text/css" href="css/PariPython_style.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script>
+		<script src="skulpt-dist-master/skulpt.min.js" type="text/javascript"></script>
+		<script src="skulpt-dist-master/skulpt-stdlib.js" type="text/javascript"></script>
+		<script src="src/ace.js" type="text/javascript" charset="utf-8">
+			var textarea = $('#content');
 
+			var editor = ace.edit("editor");
+			editor.setTheme("ace/theme/twilight");
+			editor.getSession().setMode("ace/mode/javascript");
+
+			editor.getSession().on('change', function() {
+				textarea.val(editor.getSession().getValue());
+			});
+
+			textarea.val(editor.getSession().getValue());
+
+			$("#toggletextarea-btn").on('click', function() {
+				textarea.toggle();
+				$(this).text(function(i, text) {
+					return text === "Show Content" ? "Hide Content" : "Show Content";
+				});
+			});
+
+			$("#alertcontent-btn").on('click', function() {
+				alert(textarea.val());
+			});
+		</script>
 	</head>
 	<body>
+		<script type="text/javascript">
+			// output functions are configurable.  This one just appends some text
+			// to a pre element.
+			function outf(text) {
+				var mypre = document.getElementById("output");
+				mypre.innerHTML = mypre.innerHTML + text;
+			}
 
+			function builtinRead(x) {
+				if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+					throw "File not found: '" + x + "'";
+				return Sk.builtinFiles["files"][x];
+			}
+
+			// Here's everything you need to run a python program in skulpt
+			// grab the code from your textarea
+			// get a reference to your pre element for output
+			// configure the output function
+			// call Sk.importMainWithBody()
+			function runit() {
+				document.getElementById("yourcode").value = editor.getValue();
+				var prog = document.getElementById("yourcode").value;
+				var mypre = document.getElementById("output");
+				mypre.innerHTML = '';
+				Sk.pre = "output";
+				Sk.configure({
+    inputfun: function (prompt) {
+        return window.prompt(prompt);
+    },
+    inputfunTakesPrompt: true,
+    output: outf,
+    read: builtinRead
+});
+				
+
+
+			(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+			var myPromise = Sk.misceval.asyncToPromise(function() {
+				try {
+					eval(Sk.importMainWithBody("<stdin>", false, prog));
+				} catch(e) {
+					alert(e.toString())
+				}
+				//return Sk.importMainWithBody("<stdin>", false, prog, true);
+			});
+			myPromise.then(function(mod) {
+				console.log('success');
+			}, function(err) {
+				console.log(err.toString());
+			});
+			}
+		</script>
+		<script>
+			function saveTextAsFile() {
+				var textToWrite = document.getElementById('yourcode').value;
+				var textFileAsBlob = new Blob([textToWrite], {
+					type : 'text/plain'
+				});
+				var fileNameToSaveAs = "oefening.py";
+
+				var downloadLink = document.createElement("a");
+				downloadLink.download = fileNameToSaveAs;
+				downloadLink.innerHTML = "Download File";
+				if (window.webkitURL != null) {
+					// Chrome allows the link to be clicked without actually adding it to the DOM.
+					downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+				} else {
+					// Firefox requires the link to be added to the DOM before it can be clicked.
+					downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+					downloadLink.onclick = destroyClickedElement;
+					downloadLink.style.display = "none";
+					document.body.appendChild(downloadLink);
+				}
+
+				downloadLink.click();
+			}
+
+			var button = document.getElementById('save');
+			button.addEventListener('click', saveTextAsFile);
+
+			function destroyClickedElement(event) {
+				// remove the link from the DOM
+				document.body.removeChild(event.target);
+			}
+		</script>
 		<div id="container">
 			<header>
 				<h1>demo version of PariPython</h1>
@@ -17,16 +127,16 @@
 				<nav>
 					<ul id="menu">
 						<li>
-							home
+							<a href="#">home</a>
 						</li>
 						<li>
-							lessen
+							<a href="#">lessen</a>
 						</li>
 						<li>
-							over ons
+							<a href="#">ons</a>
 						</li>
 						<li>
-							contact
+							<a href="#">contact</a>
 						</li>
 					</ul>
 					<ul id="profile">
@@ -67,7 +177,7 @@
 						modal.style.display = "none";
 					}
 				}
-				
+
 			</script>
 			<div id="sidebar">
 				<div id="exercises-side">
@@ -103,18 +213,43 @@
 				<p>
 					<h2>hier komen de oefeningen te staan</h2>
 				</p>
-				<p>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis ultricies magna, non tristique elit. Aliquam a magna ut tortor vestibulum vestibulum vitae vitae lorem. Duis iaculis justo ligula, eu porta ipsum convallis vitae. Vivamus eleifend leo sed diam ultrices, sit amet ullamcorper diam imperdiet. Praesent vitae tempus magna. Suspendisse hendrerit odio id eros faucibus mattis. Etiam blandit laoreet enim ut luctus. Nulla convallis ante orci, eget viverra diam scelerisque ut.
-				</p>
-				<p>
-					Pellentesque gravida massa non lobortis volutpat. Phasellus placerat libero nec tortor cursus viverra. Phasellus nisi eros, tempor ut magna nec, euismod scelerisque nibh. Vestibulum ligula dolor, malesuada vel auctor eget, sagittis ut mi. Quisque ac blandit massa, pulvinar volutpat sem. Etiam posuere nulla vel consequat condimentum. Duis id varius metus. Quisque non augue id tellus tristique placerat ac sit amet lectus. Aenean porttitor nulla sed felis bibendum, non finibus risus lobortis. Vivamus elit lectus, aliquam vel enim nec, rutrum ultrices dui. Nam feugiat pellentesque erat, a ultrices nulla molestie at.
-				</p>
-				<p>
-					Sed ultrices nisl ipsum, nec sollicitudin odio gravida vel. Pellentesque ac mi at magna scelerisque gravida. Phasellus et aliquam leo. Aliquam lorem sem, faucibus ut rhoncus vel, fringilla a augue. Fusce ornare pharetra viverra. Aliquam sed mauris lacinia, fermentum magna eu, malesuada mauris. Aliquam at faucibus est. Sed venenatis elit at velit fringilla, ac rhoncus libero consectetur. Pellentesque posuere vehicula lectus, sit amet maximus nisl pulvinar et. Sed dignissim erat ut massa tempus, eu viverra dui vehicula.
-				</p>
-				<p>
-					Praesent vel sodales quam. Etiam placerat fermentum lobortis. Sed gravida fringilla scelerisque. Nunc vestibulum mollis maximus. Nam eu diam ac arcu lobortis fringilla et at metus. Fusce ut ex enim. Maecenas feugiat auctor nulla et pretium. Cras consectetur sem vel sapien tempus auctor. Proin molestie risus nisi, at vehicula justo ullamcorper eget. Praesent imperdiet ac ante eu condimentum. Etiam quam felis, efficitur ut cursus eu, vulputate ut mauris.
-				</p>
+				<div id="opgave">
+					<h3> opgave van de oefening</h3>
+					<p>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis ultricies magna, non tristique elit. Aliquam a magna ut tortor vestibulum vestibulum vitae vitae lorem. Duis iaculis justo ligula, eu porta ipsum convallis vitae. Vivamus eleifend leo sed diam ultrices, sit amet ullamcorper diam imperdiet. Praesent vitae tempus magna. Suspendisse hendrerit odio id eros faucibus mattis. Etiam blandit laoreet enim ut luctus. Nulla convallis ante orci, eget viverra diam scelerisque ut.
+					</p>
+				</div>
+				<div id="editor">
+					print ('hello world')
+				</div>
+
+				<script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+				<script>
+					var editor = ace.edit("editor");
+					editor.setTheme("ace/theme/monokai");
+					editor.getSession().setMode("ace/mode/python");
+				</script>
+				<form>
+					<textarea id="yourcode" cols="40" rows=""></textarea>
+					<br />
+					<button type="button" onclick="runit()">
+						Run
+					</button>
+					<form action="check_exercise.php" method="get">
+						<button type="submit" onclick="check_exercise.php">
+							controleer
+						</button>
+
+					</form>
+
+					<button type="button" onclick="saveTextAsFile()">
+						download
+					</button>
+
+				</form>
+				<pre id="output" ></pre>
+				<!-- If you want turtle graphics include a canvas -->
+				<div id="mycanvas"></div>
 			</div>
 			<div id="theory">
 				<p>
