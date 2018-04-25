@@ -155,6 +155,7 @@ nav #profile li {
 
 .modal-content {
 	background-color: #fefefe;
+	margin: auto;
 	margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
 	border: 1px solid #888;
 	width: 20%; /* Could be more or less, depending on screen size */
@@ -162,16 +163,24 @@ nav #profile li {
 }
 
 input[type=text], input[type=password] {
-	width: 100%;
+	width: 90%;
 	padding: 12px 20px;
-	margin: 8px 0;
+	//margin: 8px 0;
 	display: block;
 	border: 1px solid #ccc;
 	box-sizing: border-box;
-	margin-left: 8px;
-	margin-right: 8px;
+	margin: auto;
+	//margin-left: 8px;
+	//margin-right: 8px;
+	overflow: visible;
 }
 
+.modal label {
+	width: 90%;
+	margin-left: 8px;
+	text-align: center;
+	
+}
 #yourcode {
 	display: none;
 	overflow: visible;

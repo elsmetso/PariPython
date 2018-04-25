@@ -60,30 +60,28 @@
 				mypre.innerHTML = '';
 				Sk.pre = "output";
 				Sk.configure({
-    inputfun: function (prompt) {
-        return window.prompt(prompt);
-    },
-    inputfunTakesPrompt: true,
-    output: outf,
-    read: builtinRead
-});
-				
+					inputfun : function(prompt) {
+						return window.prompt(prompt);
+					},
+					inputfunTakesPrompt : true,
+					output : outf,
+					read : builtinRead
+				});
 
-
-			(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-			var myPromise = Sk.misceval.asyncToPromise(function() {
-				try {
-					eval(Sk.importMainWithBody("<stdin>", false, prog));
-				} catch(e) {
-					alert(e.toString())
-				}
-				//return Sk.importMainWithBody("<stdin>", false, prog, true);
-			});
-			myPromise.then(function(mod) {
-				console.log('success');
-			}, function(err) {
-				console.log(err.toString());
-			});
+				(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+				var myPromise = Sk.misceval.asyncToPromise(function() {
+					try {
+						eval(Sk.importMainWithBody("<stdin>", false, prog));
+					} catch(e) {
+						alert(e.toString())
+					}
+					//return Sk.importMainWithBody("<stdin>", false, prog, true);
+				});
+				myPromise.then(function(mod) {
+					console.log('success');
+				}, function(err) {
+					console.log(err.toString());
+				});
 			}
 		</script>
 		<script>
@@ -219,8 +217,13 @@
 						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis ultricies magna, non tristique elit. Aliquam a magna ut tortor vestibulum vestibulum vitae vitae lorem. Duis iaculis justo ligula, eu porta ipsum convallis vitae. Vivamus eleifend leo sed diam ultrices, sit amet ullamcorper diam imperdiet. Praesent vitae tempus magna. Suspendisse hendrerit odio id eros faucibus mattis. Etiam blandit laoreet enim ut luctus. Nulla convallis ante orci, eget viverra diam scelerisque ut.
 					</p>
 				</div>
-				<div id="editor">
-					print ('hello world')
+				<script type="text/php" id="pasteFile">
+					<?php echo 'hello world'; ?>
+				</script>
+				<div id="editor"  >
+					<p>
+						<?php include('main.py'); ?>
+					</p>
 				</div>
 
 				<script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
